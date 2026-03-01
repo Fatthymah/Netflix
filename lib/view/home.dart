@@ -106,6 +106,38 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
         ),
+        Positioned(
+          bottom:20,
+          left:20,
+          child: Row(
+            children: [
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                ),
+                onPressed: (){},
+                icon:const Icon(Icons.play_arrow,color:Colors.black),
+                label: const Text(
+                  "Play",
+                  style: TextStyle(color:Colors.black),
+                ),
+              ),
+              const SizedBox(width:10),
+
+              OutlinedButton.icon(
+                style: OutlinedButton.styleFrom(
+                  side:const BorderSide(color:Colors.white),
+                ),
+                onPressed: (){},
+                icon:const Icon(Icons.info_outline,color:Colors.white),
+                label:const Text(
+                  "Info",
+                  style: TextStyle(color:Colors.white),
+                )
+              )
+            ],
+          ),
+        )
       ],
     );
   }
@@ -131,14 +163,16 @@ class HomeScreen extends StatelessWidget {
                   ),
                 );
               },
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Image.network(
-                "${ApiConstants.imageBase}${movie.posterPath}",
-                width: 130,
-                fit: BoxFit.cover,
+
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: Image.network(
+                  "${ApiConstants.imageBase}${movie.posterPath}",
+                  width: 130,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
               ),
-            ),
             ),
           );
         },
