@@ -5,6 +5,7 @@ class ApiConstants {
   static const String trending = "/trending/movie/day";
   static const String popular = "/movie/popular";
   static const String imageBase = "https://image.tmdb.org/t/p/w500";
+  static const String search = "/search/movie";
   // api key for http
   // bearer token for dio
 }

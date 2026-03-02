@@ -45,4 +45,18 @@ class ApiService {
       throw Exception("Failed to load Popular Movies");
     }
   }
+
+  Future<List<Movie>> searchMovies(String query) async {
+    final url = "${ApiConstants.baseUrl}${ApiConstants.search}?api_key=${ApiConstants.apiKey}&query=$query";
+
+    final response = await http.get(Uri.parse(url));
+
+    if(response.statusCode == 200) {
+      final decoded = jsonDecode(response.body);
+      List results = decoded['results'];
+      return results.map((movie) => Movie.fromJson(movie)).toList();
+    }else{
+      throw Exception("Failed to search movies");
+    }
+  }
 }

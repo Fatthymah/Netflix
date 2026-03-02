@@ -19,7 +19,7 @@ class Movie {
       posterPath: json['poster_path'] ?? "",
       overview: json['overview'] ?? "",
       rating: (json['vote_average'] ?? 0).toDouble(),
-      releaseDate: json['release_data'] ?? "",
+      releaseDate: json['release_date'] ?? "",
     );
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:netflix/model/movie_model.dart';
 import 'package:netflix/services/api_service.dart';
 
+// in controller calls api , stores movies and tells ui to rebuild
+
 class MovieController extends ChangeNotifier {
   final ApiService apiService = ApiService();
 
@@ -23,7 +25,24 @@ class MovieController extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+  }
 
-    // in controller calls api , stores movies and tells ui to rebuild
+  List<Movie> searchResults = [];
+  Future<void> searchMovie(String query) async {
+    if(query.isEmpty){
+      searchResults = [];
+      notifyListeners();
+      return;
+    }
+    isLoading = true;
+    notifyListeners();
+
+    try {
+      searchResults = await apiService.searchMovies(query);
+    }catch(e) {
+      debugPrint("Search Error: $e");
+    }
+    isLoading = false;
+    notifyListeners();
   }
 }
