@@ -5,31 +5,26 @@ import 'package:netflix/model/movie_model.dart';
 class MovieDetailsScreen extends StatelessWidget {
   final Movie movie;
 
-  const MovieDetailsScreen({super.key,required this.movie});
+  const MovieDetailsScreen({super.key, required this.movie});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body:SingleChildScrollView(
+      body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
-                Image.network(
-                  "${ApiConstants.imageBase}${movie.posterPath}",
-                  width: double.infinity,
-                  height: 400,
-                  fit:BoxFit.cover,
-                ),
+                _buildPoster(),
 
                 Positioned(
-                  top:40,
-                  left:10,
+                  top: 40,
+                  left: 10,
                   child: IconButton(
-                    icon:const Icon(Icons.arrow_back,color:Colors.white),
-                    onPressed: ()=> Navigator.pop(context),
+                    icon: const Icon(Icons.arrow_back, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
                   ),
                 ),
               ],
@@ -43,7 +38,7 @@ class MovieDetailsScreen extends StatelessWidget {
                   Text(
                     movie.title,
                     style: const TextStyle(
-                      color:Colors.white,
+                      color: Colors.white,
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                     ),
@@ -52,16 +47,16 @@ class MovieDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   Text(
-                    "${movie.rating}",
-                    style: const TextStyle(color:Colors.grey),
+                    "⭐ ${movie.rating}",
+                    style: const TextStyle(color: Colors.grey),
                   ),
 
-                  const SizedBox(height:20),
+                  const SizedBox(height: 20),
 
                   const Text(
                     "Overview",
-                    style:TextStyle(
-                      color:Colors.white,
+                    style: TextStyle(
+                      color: Colors.white,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
@@ -70,8 +65,10 @@ class MovieDetailsScreen extends StatelessWidget {
                   const SizedBox(height: 10),
 
                   Text(
-                    movie.overview,
-                    style: const TextStyle(color:Colors.grey),
+                    movie.overview.isEmpty
+                        ? "No overview available."
+                        : movie.overview,
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ],
               ),
@@ -79,6 +76,43 @@ class MovieDetailsScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildPoster() {
+    // If no poster path → show fallback immediately
+    if (movie.posterPath.isEmpty) {
+      return Container(
+        width: double.infinity,
+        height: 400,
+        color: Colors.grey[900],
+        alignment: Alignment.center,
+        child: const Icon(
+          Icons.movie,
+          color: Colors.white,
+          size: 60,
+        ),
+      );
+    }
+
+    return Image.network(
+      "${ApiConstants.imageBase}${movie.posterPath}",
+      width: double.infinity,
+      height: 400,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: double.infinity,
+          height: 400,
+          color: Colors.grey[900],
+          alignment: Alignment.center,
+          child: const Icon(
+            Icons.movie,
+            color: Colors.white,
+            size: 60,
+          ),
+        );
+      },
     );
   }
 }

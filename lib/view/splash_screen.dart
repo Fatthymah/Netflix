@@ -28,7 +28,9 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    _loadData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadData();
+    });
   }
 
   Future<void> _loadData() async {

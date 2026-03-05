@@ -13,7 +13,6 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final TextEditingController searchController = TextEditingController();
 
   @override
@@ -24,7 +23,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     final controller = context.watch<MovieController>();
 
     return Scaffold(
@@ -43,17 +41,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
-
       body: controller.isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             const SizedBox(height: 20),
 
-            // search bar
+            //  SEARCH BAR
             Padding(
               padding: const EdgeInsets.all(10),
               child: TextField(
@@ -64,59 +60,72 @@ class _HomeScreenState extends State<HomeScreen> {
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   hintText: "Search Movies...",
-                  hintStyle: const TextStyle(color: Colors.grey),
-                  prefixIcon: const Icon(Icons.search, color: Colors.white),
+                  hintStyle:
+                  const TextStyle(color: Colors.grey),
+                  prefixIcon: const Icon(Icons.search,
+                      color: Colors.white),
                   filled: true,
                   fillColor: Colors.black45,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius:
+                    BorderRadius.circular(10),
                     borderSide: BorderSide.none,
                   ),
                 ),
               ),
             ),
 
-            // search result
+            //  SEARCH RESULTS
             Consumer<MovieController>(
               builder: (context, controller, child) {
-
                 if (controller.searchResults.isEmpty) {
                   return const SizedBox();
                 }
 
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment:
+                  CrossAxisAlignment.start,
                   children: [
-
-                    _buildSectionTitle("Search Results"),
+                    _buildSectionTitle(
+                        "Search Results"),
 
                     SizedBox(
                       height: 200,
                       child: ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                        itemCount: controller.searchResults.length,
-                        itemBuilder: (context, index) {
-
-                          final movie = controller.searchResults[index];
+                        scrollDirection:
+                        Axis.horizontal,
+                        itemCount: controller
+                            .searchResults.length,
+                        itemBuilder:
+                            (context, index) {
+                          final movie =
+                          controller.searchResults[
+                          index];
 
                           return Padding(
-                            padding: const EdgeInsets.all(8),
+                            padding:
+                            const EdgeInsets.all(
+                                8),
                             child: GestureDetector(
                               onTap: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => MovieDetailsScreen(movie: movie),
+                                    builder: (_) =>
+                                        MovieDetailsScreen(
+                                            movie:
+                                            movie),
                                   ),
                                 );
                               },
                               child: ClipRRect(
-                                borderRadius: BorderRadius.circular(12),
-                                child: Image.network(
-                                  "${ApiConstants.imageBase}${movie.posterPath}",
-                                  width: 130,
-                                  fit: BoxFit.cover,
-                                ),
+                                borderRadius:
+                                BorderRadius
+                                    .circular(
+                                    12),
+                                child:
+                                _buildMovieImage(
+                                    movie),
                               ),
                             ),
                           );
@@ -128,18 +137,24 @@ class _HomeScreenState extends State<HomeScreen> {
               },
             ),
 
-            // banner
-            if (controller.searchResults.isEmpty && controller.trendingMovies.isNotEmpty)
-              _buildBanner(controller.trendingMovies[0]),
+            //  BANNER
+            if (controller.searchResults.isEmpty &&
+                controller.trendingMovies
+                    .isNotEmpty)
+              _buildBanner(
+                  controller.trendingMovies[0]),
 
-            if(controller.searchResults.isEmpty) ...[
-              _buildSectionTitle("Trending Now"),
-              _buildMovieList(controller.trendingMovies),
+            if (controller.searchResults.isEmpty) ...[
+              _buildSectionTitle(
+                  "Trending Now"),
+              _buildMovieList(
+                  controller.trendingMovies),
 
               const SizedBox(height: 30),
 
               _buildSectionTitle("Popular"),
-              _buildMovieList(controller.popularMovies),
+              _buildMovieList(
+                  controller.popularMovies),
 
               const SizedBox(height: 20),
             ],
@@ -149,9 +164,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSectionTitle(String title){
+  //  SECTION TITLE
+  Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding:
+      const EdgeInsets.symmetric(horizontal: 16),
       child: Text(
         title,
         style: const TextStyle(
@@ -163,14 +180,78 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //  SAFE IMAGE BUILDER
+  Widget _buildMovieImage(Movie movie) {
+    if (movie.posterPath == null ||
+        movie.posterPath!.isEmpty) {
+      return Container(
+        width: 130,
+        height: 200,
+        alignment: Alignment.center,
+        color: Colors.grey[900],
+        child: const Icon(
+          Icons.movie,
+          color: Colors.white,
+          size: 40,
+        ),
+      );
+    }
+
+    return Image.network(
+      "${ApiConstants.imageBase}${movie.posterPath}",
+      width: 130,
+      height: 200,
+      fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) {
+        return Container(
+          width: 130,
+          height: 200,
+          alignment: Alignment.center,
+          color: Colors.grey[900],
+          child: const Icon(
+            Icons.broken_image,
+            color: Colors.white,
+            size: 40,
+          ),
+        );
+      },
+    );
+  }
+
+  //  BANNER
   Widget _buildBanner(Movie movie) {
     return Stack(
       children: [
-        Image.network(
+        movie.posterPath == null ||
+            movie.posterPath!.isEmpty
+            ? Container(
+          height: 400,
+          width: double.infinity,
+          color: Colors.grey[900],
+          child: const Icon(
+            Icons.movie,
+            color: Colors.white,
+            size: 80,
+          ),
+        )
+            : Image.network(
           "${ApiConstants.imageBase}${movie.posterPath}",
           height: 400,
           width: double.infinity,
           fit: BoxFit.cover,
+          errorBuilder:
+              (context, error, stackTrace) {
+            return Container(
+              height: 400,
+              width: double.infinity,
+              color: Colors.grey[900],
+              child: const Icon(
+                Icons.broken_image,
+                color: Colors.white,
+                size: 80,
+              ),
+            );
+          },
         ),
 
         Container(
@@ -204,6 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  //  MOVIE LIST
   Widget _buildMovieList(List<Movie> movies) {
     return SizedBox(
       height: 200,
@@ -211,28 +293,26 @@ class _HomeScreenState extends State<HomeScreen> {
         scrollDirection: Axis.horizontal,
         itemCount: movies.length,
         itemBuilder: (context, index) {
-
           final movie = movies[index];
 
           return Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding:
+            const EdgeInsets.all(8.0),
             child: GestureDetector(
-              onTap: (){
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => MovieDetailsScreen(movie: movie),
+                    builder: (_) =>
+                        MovieDetailsScreen(
+                            movie: movie),
                   ),
                 );
               },
               child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.network(
-                  "${ApiConstants.imageBase}${movie.posterPath}",
-                  width: 130,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
+                borderRadius:
+                BorderRadius.circular(12),
+                child: _buildMovieImage(movie),
               ),
             ),
           );

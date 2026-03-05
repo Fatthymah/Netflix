@@ -1,62 +1,78 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:http/http.dart' as http;
 import '../constants/api_constants.dart';
 import '../model/movie_model.dart';
 
 class ApiService {
+  final Dio dio = Dio(
+    BaseOptions(
+      baseUrl: ApiConstants.baseUrl,
+      headers: {
+        "Authorization":"Bearer ${ApiConstants.bearerToken}",
+        "Content-Type":"application/json",
+      },
+    ),
+  );
 
-  final Dio dio = Dio();
-
-
+  // Trending movies
   Future<List<Movie>> getTrendingMovies() async {
+    try{
+      final response = await dio.get(
+        ApiConstants.trending,
+      );
+      if(response.statusCode == 200) {
+        List results = response.data['results'];
+        return results
+            .map<Movie>((movie) => Movie.fromJson(movie))
+            .toList();
+      }else{
+        throw Exception("Failed to load Trending movies");
+      }
 
-    final url =
-        "${ApiConstants.baseUrl}${ApiConstants.trending}?api_key=${ApiConstants.apiKey}";
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final decoded = jsonDecode(response.body);
-      List results = decoded['results'];
-      return results.map((movie) => Movie.fromJson(movie)).toList();
-    } else {
-      throw Exception("Failed to load Trending Movies");
+    }on DioException catch(e) {
+      throw Exception("Trending API Error: ${e.message}");
     }
   }
 
-  // popular movies using dio
+  // Popular Movies
   Future<List<Movie>> getPopularMovies() async {
+    try {
+      final response = await dio.get(
+        ApiConstants.popular,
+      );
 
-    final url = "${ApiConstants.baseUrl}${ApiConstants.popular}";
-
-    final response = await dio.get(
-      url,
-      options: Options(
-        headers: {
-          "Authorization": "Bearer ${ApiConstants.bearerToken}",
-          "Content-Type": "application/json"
-        },
-      ),
-    );
-
-    if (response.statusCode == 200) {
-      List results = response.data['results'];
-      return results.map((movie) => Movie.fromJson(movie)).toList();
-    } else {
-      throw Exception("Failed to load Popular Movies");
+      if(response.statusCode == 200) {
+        List results = response.data['results'];
+        return results
+            .map<Movie>((movie) => Movie.fromJson(movie))
+            .toList();
+      }else{
+        throw Exception("Failed to load Popular movies");
+      }
+    }on DioException catch(e) {
+      throw Exception("Popular API Error:${e.message}");
     }
   }
 
-  Future<List<Movie>> searchMovies(String query) async {
-    final url = "${ApiConstants.baseUrl}${ApiConstants.search}?api_key=${ApiConstants.apiKey}&query=$query";
+  // search movies
+  Future<List<Movie>>searchMovies(String query) async {
+    try{
+      final response = await dio.get(
+        ApiConstants.search,
+        queryParameters: {
+          "query":query,
+        },
+      );
 
-    final response = await http.get(Uri.parse(url));
-
-    if(response.statusCode == 200) {
-      final decoded = jsonDecode(response.body);
-      List results = decoded['results'];
-      return results.map((movie) => Movie.fromJson(movie)).toList();
-    }else{
-      throw Exception("Failed to search movies");
+      if(response.statusCode == 200) {
+        List results = response.data['results'];
+        return results
+            .map<Movie>((movie) => Movie.fromJson(movie))
+            .toList();
+      }else{
+        throw Exception("Failed to search Movies");
+      }
+    }on DioException catch (e) {
+      throw Exception("Serach API Error: ${e.message}");
     }
   }
 }

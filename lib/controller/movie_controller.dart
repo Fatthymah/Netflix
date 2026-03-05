@@ -29,20 +29,18 @@ class MovieController extends ChangeNotifier {
 
   List<Movie> searchResults = [];
   Future<void> searchMovie(String query) async {
-    if(query.isEmpty){
+
+    if (query.isEmpty) {
       searchResults = [];
       notifyListeners();
       return;
     }
-    isLoading = true;
-    notifyListeners();
 
     try {
       searchResults = await apiService.searchMovies(query);
-    }catch(e) {
+      notifyListeners();
+    } catch (e) {
       debugPrint("Search Error: $e");
     }
-    isLoading = false;
-    notifyListeners();
   }
 }
